@@ -24,16 +24,13 @@ export default class FoldAwareEnterPlugin extends Plugin {
 
 		// Only react when the cursor is just to the right of the … marker,
 		// i.e. at the `to` end of a folded range.
-		let foldFrom: number | null = null;
-		let foldTo: number | null = null;
+		const matches: Array<{ from: number; to: number }> = [];
 		foldedRanges(state).between(pos, pos, (from, to) => {
-			if (foldFrom !== null) return;
-			if (pos === to) {
-				foldFrom = from;
-				foldTo = to;
-			}
+			if (pos === to) matches.push({ from, to });
 		});
-		if (foldFrom === null || foldTo === null) return false;
+		const fold = matches[0];
+		if (!fold) return false;
+		const { from: foldFrom, to: foldTo } = fold;
 
 		// The fold must start on a heading line.
 		const headingLine = state.doc.lineAt(foldFrom);
