@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-step-over-folds",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Pressing Enter at the end of a folded heading creates a new sibling heading below the fold instead of unfolding the section.",
 	"main": "main.js",
 	"type": "module",
