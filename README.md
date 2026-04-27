@@ -1,90 +1,56 @@
-# Obsidian Sample Plugin
+# Step Over Folds
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+An Obsidian plugin that makes Enter step *over* a folded heading instead of unfolding it.
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+## What it does
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open modal (simple)" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+When the cursor is at the end of a folded heading line — to the right of the `…` fold marker — pressing **Enter** inserts a new heading of the same level *below* the folded section. The fold stays intact.
 
-## First time developing plugins?
+Default Obsidian behavior is to unfold the section so the new content lands inside it. This plugin assumes that if a section is folded and you've placed your cursor past it, you're done with that section and want to start a sibling.
 
-Quick starting guide for new plugin devs:
+## Example
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+Given this state, with the cursor right after the fold marker:
 
-## Releasing new releases
-
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
-
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
-
-## Adding your plugin to the community plugin list
-
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
-
-## How to use
-
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
-
-## Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-## Improve code quality with eslint
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- This project already has eslint preconfigured, you can invoke a check by running`npm run lint`
-- Together with a custom eslint [plugin](https://github.com/obsidianmd/eslint-plugin) for Obsidan specific code guidelines.
-- A GitHub action is preconfigured to automatically lint every commit on all branches.
-
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+```
+## Section A…│
 ```
 
-If you have multiple URLs, you can also do:
+pressing Enter produces:
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
+```
+## Section A…
+## │
 ```
 
-## API Documentation
+…and Section A remains folded.
 
-See https://docs.obsidian.md
+## When the plugin does not intervene
+
+Enter behaves normally if any of the following is true:
+
+- The cursor is not exactly at the right edge of a fold marker.
+- The folded range does not start on a Markdown heading line (`#` to `######`).
+- There is an active selection rather than a single cursor.
+
+## Installing
+
+Not yet on the community catalogue. To install manually:
+
+1. Run `npm install && npm run build` in this repo.
+2. Copy `main.js` and `manifest.json` into `<vault>/.obsidian/plugins/step-over-folds/`.
+3. Reload Obsidian and enable **Step Over Folds** under Settings → Community plugins.
+
+## Developing
+
+```
+npm install
+npm run dev      # esbuild watch + inline sourcemap
+npm run build    # tsc check + production bundle
+```
+
+The plugin registers a high-precedence CodeMirror keymap entry on Enter. When the cursor is at the `to` boundary of a folded range whose start line is a Markdown heading, it inserts `\n` plus the same number of `#` characters at that boundary. Because the change transaction transiently drops the fold, a follow-up transaction with `foldEffect` re-asserts it.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

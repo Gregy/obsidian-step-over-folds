@@ -1,11 +1,9 @@
 {
-	"id": "fold-aware-enter",
-	"name": "Fold-Aware Enter",
+	"id": "step-over-folds",
+	"name": "Step Over Folds",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Pressing Enter at the end of a folded heading creates a new sibling heading below the fold instead of unfolding it.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Pressing Enter at the end of a folded heading creates a new sibling heading below the fold instead of unfolding the section.",
+	"author": "Petr Gregor",
 	"isDesktopOnly": false
 }
